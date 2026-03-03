@@ -29,6 +29,134 @@ under the License.
             <widgets>
                 <decorator-screen name="UnicreditCommonDecorator" location="${parameters.mainDecoratorLocation}">
                     <decorator-section name="body">
+                        <section>
+                            <widgets>
+                                <label style="h3">${uiLabelMap.UnicreditApplication}</label>
+                            </widgets>
+                        </section>
+                    </decorator-section>
+                </decorator-screen>
+            </widgets>
+        </section>
+    </screen>
+
+    <screen name="configuration">
+        <section>
+            <actions>
+                <set field="headerItem" value="configuration"/><!-- this highlights the selected menu-item with name "main" -->
+                <!-- Get the system property list -->
+            </actions>
+            <widgets>
+                <decorator-screen name="UnicreditConfigurationDecorator" location="${parameters.mainDecoratorLocation}">
+                    <decorator-section name="body">
+                        <section>
+                            <actions>
+                                <entity-condition entity-name="SystemProperty" list="configPropertiesList">
+                                    <condition-expr field-name="systemResourceId" operator="equals" value="${activeApp}"/>
+                                </entity-condition>
+                            </actions>
+                            <widgets>
+                                <include-menu name="UnicreditSubTabBar" location="component://${activeApp}/widget/UnicreditMenus.xml"/>
+                                <screenlet title="${uiLabelMap.UnicreditConfigScreenletTitle}">
+                                    <include-form name="ListConfigurationProperties" location="component://${activeApp}/widget/UnicreditForms.xml"/>
+                                </screenlet>
+                            </widgets>
+                            <fail-widgets>
+                                <label style="h3">${uiLabelMap.UnicreditViewPermissionError}</label>
+                            </fail-widgets>
+                        </section>
+                    </decorator-section>
+                </decorator-screen>
+            </widgets>
+        </section>
+    </screen>
+
+    <screen name="gatewayConfigSummary">
+        <section>
+            <actions>
+                <set field="headerItem" value="gatewayConfigSummary"/><!-- this highlights the selected menu-item with name "main" -->
+                <!-- Get the system property list -->
+            </actions>
+            <widgets>
+                <decorator-screen name="UnicreditConfigurationDecorator" location="${parameters.mainDecoratorLocation}">
+                    <decorator-section name="body">
+                        <section>
+                            <actions>
+                                <entity-condition entity-name="SystemProperty" list="configSummaryPropertiesList">
+                                    <condition-expr field-name="systemResourceId" operator="equals" value="${activeApp}"/>
+                                </entity-condition>
+                            </actions>
+                            <widgets>
+                                <screenlet title="${uiLabelMap.UnicreditSummaryScreenletTitle}">
+                                    <include-form name="ConfigurationSummary" location="component://${activeApp}/widget/UnicreditForms.xml"/>
+                                </screenlet>
+                            </widgets>
+                            <fail-widgets>
+                                <label style="h3">${uiLabelMap.UnicreditViewPermissionError}</label>
+                            </fail-widgets>
+                        </section>
+                    </decorator-section>
+                </decorator-screen>
+            </widgets>
+        </section>
+    </screen>
+
+    <screen name="editConfigProperty">
+        <section>
+            <actions>
+                <set field="headerItem" value="editConfigProperty"/><!-- this highlights the selected menu-item with name "main" -->
+                <!-- Get the system property list -->
+            </actions>
+            <widgets>
+                <decorator-screen name="UnicreditCommonDecorator" location="${parameters.mainDecoratorLocation}">
+                    <decorator-section name="body">
+                        <section>
+                            <actions>
+                                <entity-one entity-name="SystemProperty" value-field="property">
+                                    <field-map field-name="systemResourceId" from-field="parameters.systemResourceId"/>
+                                    <field-map field-name="systemPropertyId" from-field="parameters.systemPropertyId"/>
+                                </entity-one>
+                                <set field="parameters.systemResourceId" from-field="property.systemResourceId"/>
+                                <set field="parameters.systemPropertyId" from-field="property.systemPropertyId"/>
+                                <set field="parameters.systemPropertyValue" from-field="property.systemPropertyValue"/>
+                                <set field="parameters.description" from-field="property.description"/>
+                            </actions>
+                            <widgets>
+                                <screenlet title="${uiLabelMap.UnicreditEditPropScreenletTitle}">
+                                    <include-form name="EditConfigurationProperty" location="component://${activeApp}/widget/UnicreditForms.xml"/>
+                                </screenlet>
+                            </widgets>
+                            <fail-widgets>
+                                <label style="h3">${uiLabelMap.UnicreditViewPermissionError}</label>
+                            </fail-widgets>
+                        </section>
+                    </decorator-section>
+                </decorator-screen>
+            </widgets>
+        </section>
+    </screen>
+
+    <screen name="newConfigurationProperty">
+        <section>
+            <actions>
+                <set field="headerItem" value="newConfigurationProperty"/><!-- this highlights the selected menu-item with name "main" -->
+                <!-- Get the system property list -->
+            </actions>
+            <widgets>
+                <decorator-screen name="UnicreditCommonDecorator" location="${parameters.mainDecoratorLocation}">
+                    <decorator-section name="body">
+                        <section>
+                            <actions>
+                            </actions>
+                            <widgets>
+                                <screenlet title="${uiLabelMap.UnicreditNewPropScreenletTitle}">
+                                    <include-form name="CreateConfigurationProperty" location="component://${activeApp}/widget/UnicreditForms.xml"/>
+                                </screenlet>
+                            </widgets>
+                            <fail-widgets>
+                                <label style="h3">${uiLabelMap.UnicreditViewPermissionError}</label>
+                            </fail-widgets>
+                        </section>
                     </decorator-section>
                 </decorator-screen>
             </widgets>

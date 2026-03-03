@@ -71,4 +71,30 @@ under the License.
             </widgets>
         </section>
     </screen>
+
+    <screen name="UnicreditConfigurationDecorator">
+        <section>
+            <actions>
+            </actions>
+            <widgets>
+                <decorator-screen name="main-decorator" location="${parameters.mainDecoratorLocation}">
+                    <decorator-section name="body">
+                        <section>
+                            <condition>
+                                <if-has-permission permission="UNICREDIT" action="_ADMIN"/>
+                            </condition>
+                            <widgets>
+                                <include-menu name="ConfigurationTabBar" location="component://${activeApp}/widget/UnicreditMenus.xml"/>
+                                <decorator-section-include name="body"/>
+                            </widgets>
+                            <fail-widgets>
+                                <label style="h3">${uiLabelMap.UnicreditViewPermissionError}</label>
+                            </fail-widgets>
+                        </section>
+                    </decorator-section>
+                </decorator-screen>
+            </widgets>
+        </section>
+    </screen>
+
 </screens>

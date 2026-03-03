@@ -20,5 +20,21 @@ under the License.
 
 <menus xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://ofbiz.apache.org/Widget-Menu" xsi:schemaLocation="http://ofbiz.apache.org/Widget-Menu http://ofbiz.apache.org/dtds/widget-menu.xsd">
     <menu name="MainAppBar" title="${uiLabelMap.UnicreditApplication}" extends="CommonAppBarMenu" extends-resource="component://common/widget/CommonMenus.xml">
+        <menu-item name="GatewayConfiguration" title="${uiLabelMap.MenuItemConfig}"><link target="gatewayConfigSummary"/></menu-item>
+    </menu>
+
+    <menu name="ConfigurationTabBar" extends="CommonTabBarMenu" extends-resource="component://common/widget/CommonMenus.xml">
+        <menu-item name="ConfigurationSummary" title="${uiLabelMap.GatewayConfigSummary}">
+            <link target="gatewayConfigSummary"/>
+        </menu-item>
+        <menu-item name="ConfigurationProperties" title="${uiLabelMap.ConfigProperties}">
+            <link target="configuration"/>
+        </menu-item>
+    </menu>
+
+    <menu name="UnicreditSubTabBar" menu-container-style="button-bar button-style-2" default-selected-style="selected">
+        <menu-item name="newConfigurationProperty" title="${uiLabelMap.NewConfigProperty}" widget-style="buttontext create">
+            <link target="newConfigurationProperty"/>
+        </menu-item>
     </menu>
 </menus>

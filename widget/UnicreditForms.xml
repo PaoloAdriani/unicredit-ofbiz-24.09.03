@@ -21,5 +21,60 @@ under the License.
 <forms xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xmlns="http://ofbiz.apache.org/Widget-Form" xsi:schemaLocation="http://ofbiz.apache.org/Widget-Form http://ofbiz.apache.org/dtds/widget-form.xsd">
 
+    <form name="ListConfigurationProperties" type="multi" list-name="configPropertiesList"
+          odd-row-style="alternate-row" header-row-style="header-row" default-table-style="basic-table hover-bar">
+        <field name="systemResourceId"><hidden/></field>
+        <field name="systemPropertyId"><display/></field>
+        <field name="systemPropertyValue"><display/></field>
+        <field name="description"><display/></field>
+        <field name="editPropLink" widget-style="buttontext" title=" ">
+            <hyperlink target="editConfigProperty" description="${uiLabelMap.EditConfigProperties}">
+                <parameter param-name="systemResourceId"/>
+                <parameter param-name="systemPropertyId"/>
+            </hyperlink>
+        </field>
+        <field name="deleteLink" widget-style="buttontext" title=" ">
+            <hyperlink target="removeConfigurationProperty" description="${uiLabelMap.DeleteConfigProperties}" request-confirmation="true">
+                <parameter param-name="systemResourceId"/>
+                <parameter param-name="systemPropertyId"/>
+            </hyperlink>
+        </field>
+    </form>
+
+    <form name="ConfigurationSummary" type="multi" list-name="configSummaryPropertiesList"
+          header-row-style="header-row" default-table-style="basic-table hover-bar">
+        <field name="systemResourceId"><hidden/></field>
+        <field name="systemPropertyId"><display/></field>
+        <field name="systemPropertyValue"><display/></field>
+        <field name="description"><display/></field>
+    </form>
+
+    <form name="EditConfigurationProperty" type="single" target="updateConfigurationProperty">
+        <field name="systemResourceId"><hidden/></field>
+        <field name="systemPropertyId"><display/></field>
+        <field name="description"><display description="${parameters.description}"/></field>
+        <field name="systemPropertyValue" use-when="!&quot;${parameters.systemPropertyId}&quot;.equals(&quot;unicredit.environment&quot;)" >
+            <text default-value="${parameters.systemPropertyValue}" size="50"/>
+        </field>
+        <field name="systemPropertyValue" title="Environment Type" use-when="&quot;${parameters.systemPropertyId}&quot;.equals(&quot;api.environment&quot;)">
+            <drop-down allow-empty="false" current="selected">
+                <option key="test" description="${uiLabelMap.ConfigPropEnvTest}"/>
+                <option key="production" description="${uiLabelMap.ConfigPropEnvProd}"/>
+            </drop-down>
+        </field>
+        <field name="submitButton" title="${uiLabelMap.UnicreditUpdatePropertyValue}">
+            <submit button-type="button" request-confirmation="true" confirmation-message="${uiLabelMap.UnicreditUpdateConfirmMessage}"/>
+        </field>
+    </form>
+
+    <form name="CreateConfigurationProperty" type="single" target="createConfigurationProperty">
+        <field name="systemResourceId"><hidden value="${activeApp}"/></field>
+        <field name="systemPropertyId" required-field="true"><text/></field>
+        <field name="systemPropertyValue" required-field="true"><text/></field>
+        <field name="description" tooltip="${uiLabelMap.UnicreditPropDescTooltip}"><text/></field>
+        <field name="submitButton" title="${uiLabelMap.UnicreditCreatePropertyValue}">
+            <submit button-type="button" request-confirmation="true" confirmation-message="${uiLabelMap.UnicreditCreateConfirmMessage}"/>
+        </field>
+    </form>
 
 </forms>

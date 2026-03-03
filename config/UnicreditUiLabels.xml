@@ -22,15 +22,119 @@ under the License.
 
 <resource xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://ofbiz.apache.org/dtds/ofbiz-properties.xsd">
     <property key="UnicreditApplication">
-        <value xml:lang="en">Unicredit Application</value>
+        <value xml:lang="it">Unicredit - Gateway di Pagamento</value>
+        <value xml:lang="en">Unicredit Payment Gateway Application</value>
     </property>
+
     <property key="UnicreditCompanyName">
-        <value xml:lang="en">OFBiz: Unicredit</value>
+        <value xml:lang="it">MpStyle: Unicredit Application</value>
+        <value xml:lang="en">MpStyle: Unicredit Application</value>
     </property>
+
     <property key="UnicreditCompanySubtitle">
-        <value xml:lang="en">Part of the Apache OFBiz Family of Open Source Software</value>
+        <value xml:lang="en">Unicredit Gateway Payment module developed by MpStyle</value>
+        <value xml:lang="it">Modulo Gateway Unicredit sviluppato da MpStyle</value>
     </property>
+
     <property key="UnicreditViewPermissionError">
         <value xml:lang="en">You are not allowed to view this page.</value>
+        <value xml:lang="it">Non sei autorizzato a visualizzare questa pagina.</value>
+    </property>
+
+    <property key="UnicreditWelcomeMessage">
+        <value xml:lang="en">Welcome to Unicredit Payment Gateway Configuration Application!</value>
+        <value xml:lang="it">Benvenuto nell'applicazione di configurazione del gateway di pagamento Unicredit!</value>
+    </property>
+
+    <property key="UnicreditConfigScreenletTitle">
+        <value xml:lang="en">Unicredit Gateway Configuration Properties</value>
+        <value xml:lang="it">Parametri di configurazione gateway Unicredit</value>
+    </property>
+
+    <property key="UnicreditSummaryScreenletTitle">
+        <value xml:lang="en">Current Gateway Configuration Parameters</value>
+        <value xml:lang="it">Attuale configurazione parametri gateway</value>
+    </property>
+
+    <property key="UnicreditEditPropScreenletTitle">
+        <value xml:lang="en">Edit Configuration Property</value>
+        <value xml:lang="it">Modifica parametro di configurazione</value>
+    </property>
+
+    <property key="UnicreditNewPropScreenletTitle">
+        <value xml:lang="en">New Configuration Property</value>
+        <value xml:lang="it">Nuovo parametro di configurazione</value>
+    </property>
+
+    <property key="UnicreditUpdatePropertyValue">
+        <value xml:lang="en">Update</value>
+        <value xml:lang="it">Aggiorna</value>
+    </property>
+
+    <property key="UnicreditCreatePropertyValue">
+        <value xml:lang="en">Create</value>
+        <value xml:lang="it">Crea</value>
+    </property>
+
+    <property key="UnicreditUpdateConfirmMessage">
+        <value xml:lang="en">Update the current value?</value>
+        <value xml:lang="it">Confermi la modifica?</value>
+    </property>
+
+    <property key="UnicreditCreateConfirmMessage">
+        <value xml:lang="en">Create the value?</value>
+        <value xml:lang="it">Confermi la creazione del nuovo parametro?</value>
+    </property>
+
+    <property key="UnicreditPropDescTooltip">
+        <value xml:lang="en">Short description for the property</value>
+        <value xml:lang="it">Breve descrizione del parametro</value>
+    </property>
+
+    <!-- Menù Labels -->
+    <property key="MenuItemConfig">
+        <value xml:lang="en">Configuration</value>
+        <value xml:lang="it">Configurazione</value>
+    </property>
+
+    <property key="ConfigProperties">
+        <value xml:lang="en">Configuration Properties</value>
+        <value xml:lang="it">Parametri di configurazione</value>
+    </property>
+
+    <property key="GatewayConfigSummary">
+        <value xml:lang="en">Gateway Parameters Configuration Summary</value>
+        <value xml:lang="it">Riepilogo Configurazione Parametri Gateway</value>
+    </property>
+
+    <property key="EditConfigProperties">
+        <value xml:lang="en">Edit</value>
+        <value xml:lang="it">Modifica</value>
+    </property>
+
+    <property key="DeleteConfigProperties">
+        <value xml:lang="en">Delete</value>
+        <value xml:lang="it">Elimina</value>
+    </property>
+
+    <property key="NewConfigProperty">
+        <value xml:lang="en">Create new configuration property</value>
+        <value xml:lang="it">Crea un nuovo parametro di configurazione</value>
+    </property>
+
+    <property key="DeleteConfigProperties">
+        <value xml:lang="en">Delete</value>
+        <value xml:lang="it">Elimina</value>
+    </property>
+
+    <!-- Static values -->
+    <property key="ConfigPropEnvTest">
+        <value xml:lang="en">Test environment</value>
+        <value xml:lang="it">Ambiente sandbox</value>
+    </property>
+
+    <property key="ConfigPropEnvProd">
+        <value xml:lang="en">Production environment</value>
+        <value xml:lang="it">Ambiente di produzione</value>
     </property>
 </resource>

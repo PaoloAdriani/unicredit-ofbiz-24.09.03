@@ -28,4 +28,36 @@ under the License.
     <copyright></copyright>
     <version></version>
 
+    <!-- Extending entity OrderHeader -->
+    <extend-entity entity-name="OrderHeader">
+        <field name="mpTid" type="id">
+            <description>Terminal ID used for Unicredit Payment Gateway Transactions</description>
+        </field>
+        <field name="mpVerifyRc" type="id">
+            <description>Unicredit verify response code</description>
+        </field>
+        <field name="mpVerifyErrDesc" type="id">
+            <description>Unicredit verify error description field</description>
+        </field>
+        <field name="mpInitErrDesc" type="id">
+            <description>Unicredit init error description field</description>
+        </field>
+        <field name="mpShopId" type="id">
+            <description>The ID referencing the payment in Unicredit transactions; it's the Order Number/Order Id</description>
+        </field>
+        <field name="mpPaymentId" type="id-long">
+            <description>Payment Identifier in Unicredit transactions</description>
+        </field>
+        <field name="mpTransId" type="numeric">
+            <description>Transaction Identifier for Unicredit payments; required for credit operations</description>
+        </field>
+        <field name="mpAmount" type="numeric">
+            <description>Amount in virtual-fixed-point: 1,00 is stored as 100</description>
+        </field>
+        <field name="mpAuthStatus" type="indicator">
+            <description>One letter code for Unicredit payment authorization status</description>
+        </field>
+
+    </extend-entity>
+
 </entitymodel>
