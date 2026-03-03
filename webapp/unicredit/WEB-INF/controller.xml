@@ -27,7 +27,6 @@ under the License.
 
     <description>Unicredit Component Site Configuration File</description>
 
-
     <!-- Request Mappings -->
     <request-map uri="main">
         <security https="true" auth="true" />
@@ -84,14 +83,14 @@ under the License.
     <!-- Payment Requests -->
     <request-map uri="callUnicredit">
         <security https="true" direct-request="false"/>
-        <event type="java" path="unicredit.service.UnicreditService" invoke="initRequest"/>
+        <event type="java" path="unicredit.UnicreditServices" invoke="initRequest"/>
         <response name="success" type="none"/>
         <response name="error" type="request" value="unicreditError"/>
     </request-map>
 
     <request-map uri="unicreditNotify">
         <security https="true"/>
-        <event type="java" path="unicredit.service.UnicreditService" invoke="notifyRequest"/>
+        <event type="java" path="unicredit.UnicreditServices" invoke="notifyRequest"/>
         <response name="success" type="none"/>
         <response name="ignore" type="none" />
         <response name="error" type="request" value="unicreditError"/>
@@ -104,8 +103,7 @@ under the License.
     </request-map>
 
     <!-- View Mappings -->
-    <view-map name="main" type="screen"
-              page="component://unicredit/widget/UnicreditScreens.xml#main" />
+    <view-map name="main" type="screen" page="component://unicredit/widget/UnicreditScreens.xml#main" />
     <view-map name="gatewayConfigSummary" type="screen" page="component://unicredit/widget/UnicreditScreens.xml#gatewayConfigSummary"/>
     <view-map name="configuration" type="screen" page="component://unicredit/widget/UnicreditScreens.xml#configuration"/>
     <view-map name="editConfigProperty" type="screen" page="component://unicredit/widget/UnicreditScreens.xml#editConfigProperty"/>
