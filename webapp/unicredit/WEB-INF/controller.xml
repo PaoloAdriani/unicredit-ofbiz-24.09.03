@@ -98,7 +98,7 @@ under the License.
 
     <request-map uri="unicreditSuccess">
         <security https="true"/>
-        <response name="success" type="request" value="thankyouorder"/>
+        <response name="success" type="request" value="emailorder"/>
         <response name="error" type="request" value="unicreditError"/>
     </request-map>
 
