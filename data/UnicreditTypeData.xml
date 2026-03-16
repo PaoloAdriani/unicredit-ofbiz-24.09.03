@@ -19,5 +19,5 @@ under the License.
 -->
 
 <entity-engine-xml>
-
+    <PaymentMethodType description="Unicredit Carta di Credito" paymentMethodTypeId="EXT_UNICREDIT_CC"/>
 </entity-engine-xml>

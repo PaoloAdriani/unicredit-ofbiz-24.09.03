@@ -8,6 +8,7 @@ import org.apache.ofbiz.entity.Delegator;
 import org.apache.ofbiz.entity.GenericValue;
 import org.apache.ofbiz.entity.util.EntityUtilProperties;
 import org.apache.ofbiz.order.order.OrderReadHelper;
+import org.apache.ofbiz.service.GenericServiceException;
 import org.apache.ofbiz.service.LocalDispatcher;
 import unicredit.logger.UnicreditLogger;
 
@@ -16,8 +17,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Locale;
+import java.util.Map;
 
 import it.netsw.apps.igfs.cg.coms.api.BaseIgfsCg.CurrencyCode;
 import it.netsw.apps.igfs.cg.coms.api.BaseIgfsCg.LangID;
@@ -234,6 +237,192 @@ public class UnicreditServices {
 
         return "success";
 
+    }
+
+    /*
+     * This method is called by Unicredit after the payment process on their platform.
+     * With this method we verify the payment and update the order status accordingly.
+     */
+    public static String notifyRequest(HttpServletRequest request, HttpServletResponse response) {
+
+        Delegator delegator = (Delegator) request.getAttribute("delegator");
+        LocalDispatcher dispatcher = (LocalDispatcher) request.getAttribute("dispatcher");
+
+        UnicreditLogger logger = new UnicreditLogger(delegator.getDelegatorTenantId());
+
+        Debug.logWarning("### Start of Unicredit Notify Verify Handling ###",MODULE);
+        logger.logInfo("### Start of Unicredit Notify Verify Handling ###");
+
+        String environment = EntityUtilProperties.getPropertyValue(SYSTEM_RESOURCE_ID, "api.environment", delegator);
+
+        String username = EntityUtilProperties.getPropertyValue(SYSTEM_RESOURCE_ID,"unicredit.username", delegator);
+        String password = EntityUtilProperties.getPropertyValue(SYSTEM_RESOURCE_ID,"unicredit.password", delegator);
+
+        //Get system user login
+        GenericValue systemUserLogin = UnicreditWorker.getSystemUserLogin(delegator);
+
+        Debug.logWarning("#### environment [" + environment + "] ###", MODULE);
+
+        String serverBaseURL = "";
+        String redirectSuccessURL = "";
+        String redirectErrorURL = "";
+        String tId = "";
+        String kSig = "";
+
+        if ("test".equals(environment)) {
+            serverBaseURL = EntityUtilProperties.getPropertyValue(SYSTEM_RESOURCE_ID, "serverBaseURL.test", delegator);
+            redirectSuccessURL = EntityUtilProperties.getPropertyValue(SYSTEM_RESOURCE_ID, "redirectSuccessURL.test",
+                    delegator);
+            redirectErrorURL = EntityUtilProperties.getPropertyValue(SYSTEM_RESOURCE_ID, "redirectErrorURL.test",
+                    delegator);
+            tId = EntityUtilProperties.getPropertyValue(SYSTEM_RESOURCE_ID, "tId.test", delegator);
+            kSig = EntityUtilProperties.getPropertyValue(SYSTEM_RESOURCE_ID, "kSig.test", delegator);
+
+        } else {
+
+            serverBaseURL = EntityUtilProperties.getPropertyValue(SYSTEM_RESOURCE_ID, "serverBaseURL.prod", delegator);
+            redirectSuccessURL = EntityUtilProperties.getPropertyValue(SYSTEM_RESOURCE_ID, "redirectSuccessURL.prod",
+                    delegator);
+            redirectErrorURL = EntityUtilProperties.getPropertyValue(SYSTEM_RESOURCE_ID, "redirectErrorURL.prod",
+                    delegator);
+            tId = EntityUtilProperties.getPropertyValue(SYSTEM_RESOURCE_ID, "tId.prod", delegator);
+            kSig = EntityUtilProperties.getPropertyValue(SYSTEM_RESOURCE_ID, "kSig.prod", delegator);
+
+        }
+
+        Debug.logWarning("#### serverBaseURL [" + serverBaseURL + "] ###", MODULE);
+        Debug.logWarning("#### redirectSuccessURL [" + redirectSuccessURL + "] ###", MODULE);
+        Debug.logWarning("#### redirectErrorURL [" + redirectErrorURL + "] ###", MODULE);
+        Debug.logWarning("#### tId [" + tId + "] ###", MODULE);
+        Debug.logWarning("#### kSig [" + kSig + "] ###", MODULE);
+
+
+        String orderId = request.getParameter("shopID");
+
+        Debug.logWarning("### Getting shopID reference ["+orderId+"] from response ###",MODULE);
+        logger.logInfo("### Getting shopID reference ["+orderId+"] from response ###");
+
+        try
+        {
+
+            String orderPaymentID = UnicreditWorker.findMpPaymentIdFromOrderId(delegator, orderId);
+
+            GenericValue orderHeader = UnicreditWorker.findOrderHeaderFromOrderId(delegator, orderId);
+
+            OrderReadHelper orh = new OrderReadHelper(orderHeader);
+
+            GenericValue productStore = orh.getProductStore();
+
+            String orderStatus = orderHeader.getString("statusId");
+
+            if(orderPaymentID != null && (orderStatus.equals("ORDER_APPROVED") || orderStatus.equals("ORDER_COMPLETED")))
+            {
+                Debug.logWarning("### (notifyRequest method) Order ["+orderId+"] is in that status ["+orderStatus+"]. Return Success. Don't process order. ###",MODULE);
+                logger.logInfo("### (notifyRequest method) Order ["+orderId+"] is in that status ["+orderStatus+"]. Return Success. Don't process order. ###");
+
+                return "success";
+            }
+
+            Debug.logWarning("### Getting paymentID from ["+orderId+"] to orderHeader ###",MODULE);
+            logger.logInfo("### Getting paymentID from ["+orderId+"] to orderHeader ###");
+
+            Debug.logWarning("### Start create IgfsCgVerify object ###",MODULE);
+            logger.logInfo("### Start create IgfsCgVerify object ###");
+
+            IgfsCgVerify verify = new IgfsCgVerify();
+
+            verify.setServerURL(new URL(serverBaseURL));
+            verify.setTimeout(15000);
+            verify.setTid(tId);
+            verify.setKSig(kSig);
+            verify.setShopID(orderId);
+            verify.setPaymentID(orderPaymentID);
+
+            if (!verify.execute())
+            {
+                // ====================================================================
+                // = redirect del client su pagina di errore definita dall’Esercente =
+                // ====================================================================
+                Debug.logWarning("### Verify not executed for these reasons: rc ["+verify.getRc()+"] error description ["+verify.getErrorDesc()+"] ###",MODULE);
+                String msg = "Verify not executed for these reasons: rc ["+verify.getRc()+"], error description ["+verify.getErrorDesc() + "]";
+                logger.logInfo(msg);
+
+                UnicreditWorker.createOrderHeaderNote(dispatcher, orderId, msg, username, password);
+
+                boolean orderCancelled = UnicreditWorker.cancelOrder(dispatcher, systemUserLogin, orderId);
+
+                Debug.logWarning("### orderId [" + orderId + "] ### cancelled with status: "+orderCancelled+" ###",MODULE);
+                logger.logInfo("############# orderId [" + orderId + "] ### cancelled with status: "+orderCancelled);
+
+                Debug.logWarning("### redirect to error URL... ###",MODULE);
+                logger.logInfo("############# redirect to error URL...###");
+
+                String errorDescription = verify.getErrorDesc().replace(" ", "_");
+
+                Debug.logWarning("### errorDescription [" + errorDescription + "] ###",MODULE);
+
+                response.sendRedirect(
+                        redirectErrorURL + "?rc=" + verify.getRc() + "&errorDesc=" +errorDescription+ "&shopID=" +orderId);
+
+                return "error";
+
+            }else {
+
+                StringBuffer resultUrl = new StringBuffer();
+                resultUrl.append(redirectSuccessURL);
+                resultUrl.append("?rc=" + verify.getRc());
+                resultUrl.append("&tranID=" + verify.getTranID());
+                resultUrl.append("&enrStatus=" + verify.getEnrStatus());
+                resultUrl.append("&authStatus=" + verify.getAuthStatus());
+                resultUrl.append("&shopID=" +orderId);
+                resultUrl.append("&orderId=" +orderId);
+
+                Debug.logWarning("### Save tranID ["+verify.getTranID()+"] and authStatus ["+verify.getAuthStatus()+"] from IgfsCgVerify object ###",MODULE);
+                logger.logInfo("### Save tranID ["+verify.getTranID()+"] and authStatus ["+verify.getAuthStatus()+"] from IgfsCgVerify object ###");
+
+                Long tranID = verify.getTranID();
+                String authStatus = verify.getAuthStatus();
+
+                boolean ordHeadUpdated = UnicreditWorker.updateOrderHeader(delegator, orderId, null,tranID, authStatus, null);
+
+                Debug.logWarning("### OrderHeader updated with this status: ["+ordHeadUpdated+"]. Redirect to successUrl... ###",MODULE);
+                logger.logInfo("### OrderHeader updated with this status: ["+ordHeadUpdated+"]. Redirect to successUrl... ###");
+
+                boolean isApproved = UnicreditWorker.approveOrder(dispatcher, systemUserLogin, orderId, productStore);
+
+                String rcDesc = UnicreditHelper.findDescriptionByRcOutcome(verify.getRc());
+
+                String msg = "Order status approved ["+isApproved+"] with this outcome: "+verify.getRc()+"-"+rcDesc+ "and transaction ID: "+verify.getTranID();
+
+                UnicreditWorker.createOrderHeaderNote(dispatcher, orderId, msg, username, password);
+
+                // call the email confirm service
+                //Map<String, String> emailContext = UtilMisc.toMap("orderId", orderId);
+
+                //dispatcher.runSync("sendOrderConfirmation", emailContext);
+
+                Debug.logWarning("### Redirect to success URL ["+resultUrl +"]... ###",MODULE);
+
+                response.sendRedirect(resultUrl.toString());
+            }
+
+        //} catch (GenericServiceException e) {
+          //  Debug.logError(e, "Problems sending email confirmation", MODULE);
+        } catch (IgfsException e) {
+            // TODO Auto-generated catch block
+            Debug.logError(e.getMessage(), MODULE);
+            return "error";
+        } catch (MalformedURLException e) {
+            // TODO Auto-generated catch block
+            Debug.logError(e.getMessage(), MODULE);
+            return "error";
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+            Debug.logError(e.getMessage(), MODULE);
+            return "error";
+        }
+
+        return "success";
     }
 
 } //end class

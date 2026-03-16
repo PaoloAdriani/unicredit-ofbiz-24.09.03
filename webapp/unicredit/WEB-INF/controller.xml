@@ -89,7 +89,7 @@ under the License.
     </request-map>
 
     <request-map uri="unicreditNotify">
-        <security https="true"/>
+        <security https="true" auth="false"/>
         <event type="java" path="unicredit.UnicreditServices" invoke="notifyRequest"/>
         <response name="success" type="none"/>
         <response name="ignore" type="none" />
@@ -97,8 +97,8 @@ under the License.
     </request-map>
 
     <request-map uri="unicreditSuccess">
-        <security https="true"/>
-        <response name="success" type="request" value="thankyouorder"/>
+        <security https="true" auth="false"/>
+        <response name="success" type="request" value="emailorder"/>
         <response name="error" type="request" value="unicreditError"/>
     </request-map>
 
